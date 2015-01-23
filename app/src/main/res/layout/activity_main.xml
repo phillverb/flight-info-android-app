@@ -4,6 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#0083a8"
+    android:id="@+id/main_layout"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
 
@@ -32,12 +33,13 @@
         android:textColorHint="#FFFFFF"
         android:hint="@string/flight_id" />
 
-    <Button
+    <Button android:id="@+id/go_button"
         android:layout_width="300px"
         android:layout_height="wrap_content"
         android:text="@string/submit_flight_id"
         android:layout_below="@id/flight_id"
         android:textColor="#FFFFFF"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="getFlightInformation" />
 
 </RelativeLayout>
