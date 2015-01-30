@@ -7,7 +7,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -69,6 +73,21 @@ public class MainActivity extends ActionBarActivity {
         textView.setLayoutParams(p);
 
         // Go on ahead and add it to the view
+        layout.addView(textView);
+
+
+
+        //ImageView jet = (ImageView)layout.findViewById(R.id.jet_image);
+        //AnimationSet animationSet = new AnimationSet(true);
+        //Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_fly);
+        //Animation animation2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_rotate);
+        //Animation animation3 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_fly_out);
+        //animationSet.addAnimation(animation1);
+        //animationSet.addAnimation(animation2);
+        //animation3.setStartOffset(1500);
+        //animationSet.addAnimation(animation3);
+        //jet.startAnimation(animationSet);
+
 
     }
 }
