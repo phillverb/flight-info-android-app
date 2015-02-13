@@ -49,11 +49,13 @@ public class MainActivity extends ActionBarActivity {
 
     /** Called when the user clicks "Go"  */
     public void getFlightInformation(View view) {
-       // Intent intent = new Intent(this, DisplayMessageActivity.class);
 
         // Get the text from text box
         EditText editText = (EditText) findViewById(R.id.flight_id);
         String flight_id = editText.getText().toString();
+
+        // Create FlightInfo object based on flight ID given
+        FlightInfo info = new FlightInfo(flight_id);
 
         // Get the main activity's "layout" so that we can add stuff to it
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_layout);
@@ -62,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
         final TextView textView = new TextView(this);
 
         // Set the text of the new text view
-        textView.setText(flight_id);
+        textView.setText("Going to: " + info.fromAirportCode);
 
         // Give the text view it's  default style
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
