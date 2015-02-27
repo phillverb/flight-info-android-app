@@ -1,5 +1,11 @@
 package com.verbinteractive.flightinformation;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +20,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -52,19 +65,13 @@ public class MainActivity extends ActionBarActivity {
 
         // Get the text from text box
         EditText editText = (EditText) findViewById(R.id.flight_id);
-        String flight_id = editText.getText().toString();
-
-        // Create FlightInfo object based on flight ID given
-        FlightInfo info = new FlightInfo(flight_id);
+        String flightId = editText.getText().toString();
 
         // Get the main activity's "layout" so that we can add stuff to it
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_layout);
+        final RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_layout);
 
         // Create textView object, that will become the flight information
         final TextView textView = new TextView(this);
-
-        // Set the text of the new text view
-        textView.setText("Going to: " + info.fromAirportCode);
 
         // Give the text view it's  default style
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -74,8 +81,57 @@ public class MainActivity extends ActionBarActivity {
         p.addRule(RelativeLayout.BELOW, R.id.go_button);
         textView.setLayoutParams(p);
 
-        // Go on ahead and add it to the view
-        layout.addView(textView);
+        final FlightInfo info = new FlightInfo(flightId);
+
+        @TargetApi(Build.VERSION_CODES.KITKAT)
+        final class DownloadJSONTask extends AsyncTask<String, Void, String> {
+            protected String doInBackground(String... endpoint) {
+
+                String json = "";
+
+                try {
+                    URL urlObj = new URL(endpoint[0]);
+
+                    try(InputStreamReader in = new InputStreamReader(urlObj.openStream(), "UTF-8")) {
+                        BufferedReader reader = new BufferedReader(in);
+                        for (String line; (line = reader.readLine()) != null;) {
+                            json = json + line;
+                            System.out.println(line);
+                        }
+                    }
+                    catch (IOException e) {
+
+                    }
+                }
+                catch (MalformedURLException e) {
+                    System.out.println(e.getCause());
+                }
+
+                return json;
+                //long returnVal = 1;
+                //return returnVal;
+            }
+
+            protected void onProgressUpdate(Integer... progress) {
+                //setProgressPercent(progress[0]);
+            }
+
+            protected void onPostExecute(String result) {
+                System.out.println("Remote fetching done ");
+
+                info.setRawJSON(result);
+                info.fetchFlightInfo();
+
+                textView.setText(info.toAirportCode);
+
+                // Go on ahead and add it to the view
+                layout.addView(textView);
+
+            }
+        }
+
+        new DownloadJSONTask().execute( info.getStatsEndpoint() );
+
 
 
 
@@ -92,4 +148,6 @@ public class MainActivity extends ActionBarActivity {
 
 
     }
+
+
 }
