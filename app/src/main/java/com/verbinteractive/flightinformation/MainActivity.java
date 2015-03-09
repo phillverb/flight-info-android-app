@@ -2,6 +2,7 @@ package com.verbinteractive.flightinformation;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -63,6 +64,7 @@ public class MainActivity extends ActionBarActivity {
     /** Called when the user clicks "Go"  */
     public void getFlightInformation(View view) {
 
+
         // Get the text from text box
         EditText editText = (EditText) findViewById(R.id.flight_id);
         String flightId = editText.getText().toString();
@@ -70,8 +72,21 @@ public class MainActivity extends ActionBarActivity {
         // Get the main activity's "layout" so that we can add stuff to it
         final RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_layout);
 
+
+        ImageView jet = (ImageView)layout.findViewById(R.id.jet_image);
+        AnimationSet animationSet = new AnimationSet(true);
+        Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_in);
+        Animation animation2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_orig);
+        //Animation animation3 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_fly_out);
+        animationSet.addAnimation(animation1);
+        animationSet.addAnimation(animation2);
+        animation2.setStartOffset(300);
+        //animationSet.addAnimation(animation3);
+        jet.startAnimation(animationSet);
+
         // Create textView object, that will become the flight information
         final TextView textView = new TextView(this);
+        textView.setTextColor(Color.parseColor("#FFFFFF"));
 
         // Give the text view it's  default style
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -81,12 +96,15 @@ public class MainActivity extends ActionBarActivity {
         p.addRule(RelativeLayout.BELOW, R.id.go_button);
         textView.setLayoutParams(p);
 
+        // Go on ahead and add it to the view
+        layout.addView(textView);
+
         final FlightInfo info = new FlightInfo(flightId);
 
         @TargetApi(Build.VERSION_CODES.KITKAT)
         final class DownloadJSONTask extends AsyncTask<String, Void, String> {
             protected String doInBackground(String... endpoint) {
-
+                textView.setText("Fetching information from " + endpoint[0] + "...\n");
                 String json = "";
 
                 try {
@@ -117,36 +135,21 @@ public class MainActivity extends ActionBarActivity {
             }
 
             protected void onPostExecute(String result) {
-                System.out.println("Remote fetching done ");
-
+                String resultOutput = textView.getText().toString();
+                resultOutput += "Parsing JSON response...\n";
                 info.setRawJSON(result);
                 info.fetchFlightInfo();
-
-                textView.setText(info.toAirportCode);
-
-                // Go on ahead and add it to the view
-                layout.addView(textView);
+                resultOutput += "\n";
+                resultOutput += "Success! Results below:\n";
+                resultOutput += "\n";
+                resultOutput += "Flight " + info.flightId + " departs from  " + info.fromAirportCode + "\n";
+                resultOutput += "Flight " + info.flightId + " arrives at  " + info.toAirportCode + "\n";
+                textView.setText(resultOutput);
 
             }
         }
 
         new DownloadJSONTask().execute( info.getStatsEndpoint() );
-
-
-
-
-        //ImageView jet = (ImageView)layout.findViewById(R.id.jet_image);
-        //AnimationSet animationSet = new AnimationSet(true);
-        //Animation animation1 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_fly);
-        //Animation animation2 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_rotate);
-        //Animation animation3 = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.jet_fly_out);
-        //animationSet.addAnimation(animation1);
-        //animationSet.addAnimation(animation2);
-        //animation3.setStartOffset(1500);
-        //animationSet.addAnimation(animation3);
-        //jet.startAnimation(animationSet);
-
-
     }
 
 

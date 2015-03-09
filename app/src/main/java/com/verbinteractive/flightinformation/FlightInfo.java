@@ -68,28 +68,15 @@ class FlightInfo {
     public void fetchFlightInfo() {
         JSONObject obj = null;
         try {
-
-            System.out.println("Before new json object");
             System.out.println(this.rawJSON);
             obj = new JSONObject(this.rawJSON);
-
-            System.out.println("After new json object");
-
-            obj.getJSONArray("flightStatuses");
-
-            System.out.println("step 1");
-            //t.getJSONObject(0);
-            System.out.println("step 2");
-            //this.toAirportCode = t.getJSONObject(0).getString("arrivalAirportFsCode");
-            System.out.println("step 3");
-            //this.toAirportCode = obj.getJSONArray("flightStatuses")[0];
-            //this.fromAirportCode = obj.getJSONObject("flightStatuses").getJSONObject("flightTrack").getString("departureAirportFsCode");
-            System.out.println("Airport code: " + this.toAirportCode);
+            JSONObject flightStats = obj.getJSONObject("flightStatus");
+            this.fromAirportCode = flightStats.getString("departureAirportFsCode");
+            this.toAirportCode = flightStats.getString("arrivalAirportFsCode");
         }
         catch (JSONException e) {
 
         }
-        //System.out.println(this.getRemoteJSON("http://www.stackoverlflow.com"));
     }
 
     /**
